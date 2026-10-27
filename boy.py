@@ -77,9 +77,12 @@ class Boy:
         self.face_dir = 1
         self.move_dir = 0
         self.image = load_image('animation_sheet.png')
+        self.auto_run = autoRun(self)
         self.machine = Machine(
             model=self,
-            states=['IDLE', 'RUN', 'SLEEP'],
+            states=['IDLE', 'RUN', 'SLEEP',
+                    {'name': 'autoRun', 'on_enter': self.auto_run.enter,
+                     'on_exit': self.auto_run.exit}],
             initial='IDLE',
             auto_transitions=False,
         )
@@ -87,6 +90,10 @@ class Boy:
         self.machine.add_transition('tick', 'IDLE', None, after='animate_idle')
         self.machine.add_transition('tick', 'RUN', None, after='run')
         self.machine.add_transition('tick', 'SLEEP', None)
+        self.machine.add_transition('tick', 'autoRun', None,
+                                    after=self.auto_run.update)
+        self.machine.add_transition('start_auto_run', 'IDLE', 'autoRun')
+        self.machine.add_transition('finish_auto_run', 'autoRun', 'IDLE')
         self.machine.add_transition('start_running', ['IDLE', 'SLEEP'], 'RUN',
                                     after='reset_idle_timer')
         self.machine.add_transition('stop_running', 'RUN', 'IDLE',
@@ -149,7 +156,9 @@ class Boy:
         self.animate_idle()
 
     def draw(self):
-        if self.state == 'SLEEP':
+        if self.state == 'autoRun':
+            self.auto_run.draw()
+        elif self.state == 'SLEEP':
             # Rotate toward the back so the face points up in either direction.
             sleep_angle = self.face_dir * 3.141592653589793 / 2
             self.image.clip_composite_draw(
