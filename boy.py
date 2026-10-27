@@ -40,6 +40,16 @@ class autoRun:
         if now - self.started_at >= boy.AUTO_RUN_DURATION:
             boy.finish_auto_run()
             return
+        keys = SDL_GetKeyboardState(None)
+        left = bool(keys[SDL_SCANCODE_LEFT])
+        right = bool(keys[SDL_SCANCODE_RIGHT])
+        if left or right:
+            boy.cancel_auto_run()
+            # exit() restores the normal position and resets the movement timer.
+            boy.move_dir = int(right) - int(left)
+            if boy.move_dir:
+                boy.face_dir = boy.move_dir
+            return
         elapsed = now - boy.last_update
         boy.x += boy.move_dir * boy.AUTO_RUN_SPEED * elapsed
         self.keep_in_bounds()
@@ -94,6 +104,7 @@ class Boy:
                                     after=self.auto_run.update)
         self.machine.add_transition('start_auto_run', 'IDLE', 'autoRun')
         self.machine.add_transition('finish_auto_run', 'autoRun', 'IDLE')
+        self.machine.add_transition('cancel_auto_run', 'autoRun', 'RUN')
         self.machine.add_transition('start_running', ['IDLE', 'SLEEP'], 'RUN',
                                     after='reset_idle_timer')
         self.machine.add_transition('stop_running', 'RUN', 'IDLE',
@@ -115,7 +126,7 @@ class Boy:
         a_down = bool(keys[SDL_SCANCODE_A])
         a_pressed = a_down and not self.a_was_down
         self.a_was_down = a_down
-        # Automatic movement owns direction and ignores manual input until expiry.
+        # The automatic state handles expiry and directional cancellation first.
         # Keep key history current even on the frame that returns to IDLE.
         if self.state == 'autoRun':
             self.space_was_down = space_down
