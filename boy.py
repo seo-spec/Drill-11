@@ -4,6 +4,20 @@ from transitions import Machine
 from sdl2 import (SDL_GetKeyboardState, SDL_NUM_SCANCODES, SDL_SCANCODE_SPACE,
                   SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT)
 
+class autoRun:
+    """Automatic running state; Boy's machine delegates its callbacks here."""
+
+    def __init__(self, boy):
+        self.boy = boy
+        self.started_at = None
+
+    def enter(self):
+        boy = self.boy
+        boy.reset_idle_timer()
+        self.started_at = boy.last_update
+        boy.move_dir = boy.face_dir
+
+
 class Boy:
     FRAMES_PER_SECOND = 10
     FRAME_COUNT = 8
