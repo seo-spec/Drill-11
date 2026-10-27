@@ -49,6 +49,13 @@ class autoRun:
                             100 if boy.face_dir == 1 else 0,
                             100, 100, boy.x, boy.y, size, size)
 
+    def exit(self):
+        boy = self.boy
+        boy.y = self.normal_y
+        boy.move_dir = 0
+        self.started_at = None
+        boy.reset_idle_timer()
+
 
 class Boy:
     FRAMES_PER_SECOND = 10
