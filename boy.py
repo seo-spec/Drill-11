@@ -2,7 +2,7 @@ from pico2d import load_image, get_canvas_width
 from time import perf_counter
 from transitions import Machine
 from sdl2 import (SDL_GetKeyboardState, SDL_NUM_SCANCODES, SDL_SCANCODE_SPACE,
-                  SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT)
+                  SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, SDL_SCANCODE_A)
 
 class autoRun:
     """Automatic running state; Boy's machine delegates its callbacks here."""
@@ -106,11 +106,15 @@ class Boy:
         self.animation_time = 0.0
         self.idle_since = self.last_update
         self.space_was_down = False
+        self.a_was_down = False
 
     def update(self):
         # main.py already pumps SDL events; inspect keys without consuming them.
         keys = SDL_GetKeyboardState(None)
         space_down = bool(keys[SDL_SCANCODE_SPACE])
+        a_down = bool(keys[SDL_SCANCODE_A])
+        a_pressed = a_down and not self.a_was_down
+        self.a_was_down = a_down
         self.move_dir = int(bool(keys[SDL_SCANCODE_RIGHT])) - int(bool(keys[SDL_SCANCODE_LEFT]))
         if self.state == 'SLEEP':
             if self.move_dir:
