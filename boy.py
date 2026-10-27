@@ -135,7 +135,6 @@ class Boy:
         if self.state == 'IDLE' and a_pressed:
             self.space_was_down = space_down
             self.start_auto_run()
-            self.tick()
             return
         self.move_dir = int(bool(keys[SDL_SCANCODE_RIGHT])) - int(bool(keys[SDL_SCANCODE_LEFT]))
         if self.state == 'SLEEP':
