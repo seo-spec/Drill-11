@@ -16,12 +16,26 @@ class autoRun:
         boy.reset_idle_timer()
         self.started_at = boy.last_update
         boy.move_dir = boy.face_dir
+        self.keep_in_bounds()
+
+    def keep_in_bounds(self):
+        boy = self.boy
+        half_width = boy.HALF_WIDTH * boy.AUTO_RUN_SCALE
+        left, right = half_width, get_canvas_width() - half_width
+        if right <= left:
+            boy.x = get_canvas_width() / 2
+        elif boy.x <= left:
+            boy.x, boy.move_dir = left, 1
+        elif boy.x >= right:
+            boy.x, boy.move_dir = right, -1
+        boy.face_dir = boy.move_dir
 
 
     def update(self):
         boy = self.boy
         elapsed = perf_counter() - boy.last_update
         boy.x += boy.move_dir * boy.AUTO_RUN_SPEED * elapsed
+        self.keep_in_bounds()
         boy.animate_idle()
 
 
