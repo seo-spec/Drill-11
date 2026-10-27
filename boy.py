@@ -40,6 +40,7 @@ class autoRun:
         if now - self.started_at >= boy.AUTO_RUN_DURATION:
             boy.finish_auto_run()
             return
+        elapsed = now - boy.last_update
         keys = SDL_GetKeyboardState(None)
         left = bool(keys[SDL_SCANCODE_LEFT])
         right = bool(keys[SDL_SCANCODE_RIGHT])
@@ -49,8 +50,8 @@ class autoRun:
             boy.move_dir = int(right) - int(left)
             if boy.move_dir:
                 boy.face_dir = boy.move_dir
+            boy.run(elapsed)
             return
-        elapsed = now - boy.last_update
         boy.x += boy.move_dir * boy.AUTO_RUN_SPEED * elapsed
         self.keep_in_bounds()
         boy.animate_idle()
@@ -173,8 +174,9 @@ class Boy:
         self.last_update = now
         self.frame = int(self.animation_time * self.FRAMES_PER_SECOND) % self.FRAME_COUNT
 
-    def run(self):
-        elapsed = perf_counter() - self.last_update
+    def run(self, elapsed=None):
+        if elapsed is None:
+            elapsed = perf_counter() - self.last_update
         self.x += self.move_dir * self.RUN_SPEED * elapsed
         self.x = max(self.HALF_WIDTH,
                      min(get_canvas_width() - self.HALF_WIDTH, self.x))
