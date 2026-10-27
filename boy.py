@@ -36,7 +36,11 @@ class autoRun:
 
     def update(self):
         boy = self.boy
-        elapsed = perf_counter() - boy.last_update
+        now = perf_counter()
+        if now - self.started_at >= boy.AUTO_RUN_DURATION:
+            boy.finish_auto_run()
+            return
+        elapsed = now - boy.last_update
         boy.x += boy.move_dir * boy.AUTO_RUN_SPEED * elapsed
         self.keep_in_bounds()
         boy.animate_idle()
