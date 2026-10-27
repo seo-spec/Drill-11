@@ -10,12 +10,15 @@ class autoRun:
     def __init__(self, boy):
         self.boy = boy
         self.started_at = None
+        self.normal_y = boy.y
 
     def enter(self):
         boy = self.boy
         boy.reset_idle_timer()
         self.started_at = boy.last_update
         boy.move_dir = boy.face_dir
+        self.normal_y = boy.y
+        boy.y = self.normal_y + boy.HALF_WIDTH * (boy.AUTO_RUN_SCALE - 1)
         self.keep_in_bounds()
 
     def keep_in_bounds(self):
@@ -37,6 +40,14 @@ class autoRun:
         boy.x += boy.move_dir * boy.AUTO_RUN_SPEED * elapsed
         self.keep_in_bounds()
         boy.animate_idle()
+
+
+    def draw(self):
+        boy = self.boy
+        size = boy.HALF_WIDTH * 2 * boy.AUTO_RUN_SCALE
+        boy.image.clip_draw(boy.frame * 100,
+                            100 if boy.face_dir == 1 else 0,
+                            100, 100, boy.x, boy.y, size, size)
 
 
 class Boy:
