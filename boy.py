@@ -10,6 +10,9 @@ class Boy:
     SLEEP_DELAY = 5.0
     RUN_SPEED = 200.0  # Pixels per second.
     HALF_WIDTH = 50
+    AUTO_RUN_SPEED = RUN_SPEED * 2
+    AUTO_RUN_SCALE = 1.5
+    AUTO_RUN_DURATION = 5.0
 
     def __init__(self):
         self.x, self.y = 400, 90
