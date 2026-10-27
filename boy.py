@@ -115,6 +115,17 @@ class Boy:
         a_down = bool(keys[SDL_SCANCODE_A])
         a_pressed = a_down and not self.a_was_down
         self.a_was_down = a_down
+        # Automatic movement owns direction and ignores manual input until expiry.
+        # Keep key history current even on the frame that returns to IDLE.
+        if self.state == 'autoRun':
+            self.space_was_down = space_down
+            self.tick()
+            return
+        if self.state == 'IDLE' and a_pressed:
+            self.space_was_down = space_down
+            self.start_auto_run()
+            self.tick()
+            return
         self.move_dir = int(bool(keys[SDL_SCANCODE_RIGHT])) - int(bool(keys[SDL_SCANCODE_LEFT]))
         if self.state == 'SLEEP':
             if self.move_dir:
