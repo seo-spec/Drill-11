@@ -18,6 +18,13 @@ class autoRun:
         boy.move_dir = boy.face_dir
 
 
+    def update(self):
+        boy = self.boy
+        elapsed = perf_counter() - boy.last_update
+        boy.x += boy.move_dir * boy.AUTO_RUN_SPEED * elapsed
+        boy.animate_idle()
+
+
 class Boy:
     FRAMES_PER_SECOND = 10
     FRAME_COUNT = 8
